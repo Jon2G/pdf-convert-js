@@ -1,6 +1,6 @@
 import { URL } from 'node:url';
 import { copyFile, readFile, writeFile } from 'node:fs/promises';
-import { createWriteStream } from 'node:fs';
+import { createWriteStream, createReadStream, statSync } from 'node:fs';
 import { exec, execFile } from 'child-process-promise';
 import tmp, { FileResult } from 'tmp-promise';
 import axios from 'axios';
@@ -91,6 +91,123 @@ export class PdfConvert {
       return buffer;
     } catch (err) {
       throw new Error('Unable to process image from page: ' + err);
+    }
+  }
+
+  async shrink(options?: {
+    dpi?: number;
+    pdfVersion?: string;
+    greyScale?: boolean;
+  }): Promise<Buffer> {
+    await this.writePDFToTemp();
+
+    if (!this.tmpFile) {
+      throw new Error('No temporary pdf file!');
+    }
+
+    const dpi = options?.dpi ?? 300;
+    const pdfVersion = options?.pdfVersion ?? (await this.getPdfVersion());
+    const greyScale = options?.greyScale ?? false;
+
+    let greyParams: string[] = [];
+    if (greyScale) {
+      greyParams = [
+        '-sProcessColorModel=DeviceGray',
+        '-sColorConversionStrategy=Gray',
+        '-dOverrideICC',
+      ];
+    }
+
+    try {
+      const shrunkenFile = await tmp.file();
+
+      await execFile('gs', [
+        '-dQUIET',
+        '-dPARANOIDSAFER',
+        '-dBATCH',
+        '-dNOPAUSE',
+        '-dNOPROMPT',
+        '-sDEVICE=pdfwrite',
+        `-dCompatibilityLevel=${pdfVersion}`,
+        '-dPDFSETTINGS=/screen',
+        '-dEmbedAllFonts=true',
+        '-dSubsetFonts=true',
+        '-dAutoRotatePages=/None',
+        '-dColorImageDownsampleType=/Bicubic',
+        `-dColorImageResolution=${dpi}`,
+        '-dGrayImageDownsampleType=/Bicubic',
+        `-dGrayImageResolution=${dpi}`,
+        '-dMonoImageDownsampleType=/Subsample',
+        `-dMonoImageResolution=${dpi}`,
+        '-dMonoImageDownsampleType=/Subsample',
+        `-dMonoImageResolution=${dpi}`,
+        ...greyParams,
+        `-sOutputFile=${shrunkenFile.path}`,
+        this.tmpFile.path,
+      ]);
+
+      const previousFileSize = this.getFileSizeInBytes(this.tmpFile.path);
+      const shrunkenFileSize = this.getFileSizeInBytes(shrunkenFile.path);
+
+      /* if shrunken file is actually bigger or the same size as input, 
+      then straightly pass input pdf as output
+      */
+      if (previousFileSize <= shrunkenFileSize) {
+        const buffer = await readFile(this.tmpFile.path);
+        await shrunkenFile.cleanup();
+        return buffer;
+      }
+
+      const buffer = await readFile(shrunkenFile.path);
+      await shrunkenFile.cleanup();
+      return buffer;
+    } catch (err) {
+      throw new Error('Unable to process image from page: ' + err);
+    }
+  }
+
+  private getFileSizeInBytes(filename: string): bigint {
+    const stats = statSync(filename, { bigint: true });
+    return stats.size;
+  }
+
+  public async getPdfVersion() {
+    // only read first 1024 bytes of pdf file. Because there the pdf version should be defined
+    try {
+      await this.writePDFToTemp();
+
+      if (!this.tmpFile) {
+        throw new Error('No temporary pdf file!');
+      }
+
+      let firstChunk = '';
+      const stream = createReadStream(this.tmpFile.path, {
+        encoding: 'utf8',
+        start: 0,
+        end: 1024,
+      });
+
+      for await (const chunk of stream) {
+        firstChunk = chunk;
+        break;
+      }
+      await stream.close();
+
+      const regex = /%PDF-[0-9].[0-9]/g;
+      const found = firstChunk.match(regex);
+
+      if (found !== null && Array.isArray(found) && found.length > 0) {
+        const pdfVersionData = found[0].split('-');
+
+        if (pdfVersionData.length === 2) {
+          return pdfVersionData[1].trim();
+        }
+      }
+
+      // fallback to version 1.4 as default version
+      return '1.4';
+    } catch (error) {
+      throw new Error(`Failed to retrieve pdf version: ${error}`);
     }
   }
 

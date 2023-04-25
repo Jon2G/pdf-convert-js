@@ -9,7 +9,7 @@ Along with the usage of TypeScript and promises, this version:
 ## Install
 
 ```bash
-$ npm install @brakebein/pdf2png
+$ npm install @dcbeck/pdf-convert-js
 ```
 
 ## Setup
@@ -54,7 +54,7 @@ const options: PdfConvertOptions = {
   resolution: 600,
   // path to ghostscript bin directory (only Windows)
   // defaults to executable shipped with this package
-  ghostscriptPath: 'path/to/gs/bin'
+  ghostscriptPath: 'path/to/gs/bin',
 };
 const pdfConverter = new PdfConvert('./folder/example.pdf', options);
 
@@ -63,9 +63,20 @@ const pages = await pdfConverter.getPageCount();
 
 // get page 1 as a PNG Image Buffer
 const buffer = await pdfConverter.convertPageToImage(1);
-await fs.writeFile("example_page1.png", buffer);
+await fs.writeFile('example_page1.png', buffer);
 
-// Dispose the converter object when you're done using it, 
+// get the pdf version of the PDF
+const pdfVersion = await pdfConverter.getPdfVersion();
+
+// compress / shrink the PDF with optional parameters
+const shrunkenPDFBuffer = await pdfConverter.shrink({
+  dpi: 72,
+  pdfVersion: '1.4',
+  greyScale: false,
+});
+await fs.writeFile('shrunken.pdf', shrunkenPDFBuffer);
+
+// Dispose the converter object when you're done using it,
 // otherwise the pdf tmp file will not be removed
 // (but should be automatically removed on process exit).
 // To manually call `dispose()` allows you to run multiple operations
