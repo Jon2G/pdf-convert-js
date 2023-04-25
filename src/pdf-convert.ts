@@ -7,15 +7,36 @@ import axios from 'axios';
 
 export interface PdfConvertOptions {
   /**
-   * Resolution of the output image in dpi.
-   * @default 600
-   */
-  resolution?: number;
-  /**
    * Path to ghostscript bin directory.
    * @default Included Windows version
    */
   ghostscriptPath?: string;
+}
+
+export interface Pdf2PngOptions {
+  /**
+   * // resolution of the output image in dpi
+   * @default 600
+   */
+  resolution?: number;
+}
+
+export interface PdfShrinkOptions {
+  /**
+   * // resolution of the output image in dpi
+   * @default 300
+   */
+  resolution?: number;
+  /**
+   * // pdf version of the output shrunken pdf
+   * @default same-version-as-input
+   */
+  pdfVersion?: string;
+  /**
+   * // option to set the output as grey scale pdf
+   * @default false
+   */
+  greyScale?: boolean;
 }
 
 export class PdfConvert {
@@ -34,7 +55,6 @@ export class PdfConvert {
     this.source = source;
 
     this.options = {
-      resolution: 600,
       ghostscriptPath: new URL(
         './executables/ghostscript',
         import.meta.url,
@@ -57,9 +77,13 @@ export class PdfConvert {
   /**
    * Convert a page to a png image.
    * @param page Page number
+   * @param options Pdf2PngOptions
    * @return png image as buffer
    */
-  async convertPageToImage(page: number): Promise<Buffer> {
+  async convertPageToImage(
+    page: number,
+    options?: Pdf2PngOptions,
+  ): Promise<Buffer> {
     await this.writePDFToTemp();
 
     if (!this.tmpFile) {
@@ -78,7 +102,7 @@ export class PdfConvert {
         '-sDEVICE=png16m',
         '-dTextAlphaBits=4',
         '-dGraphicsAlphaBits=4',
-        `-r${this.options.resolution}`,
+        `-r${options?.resolution ?? 600}`,
         `-dFirstPage=${page}`,
         `-dLastPage=${page}`,
         `-sOutputFile=${tmpImage.path}`,
@@ -94,18 +118,19 @@ export class PdfConvert {
     }
   }
 
-  async shrink(options?: {
-    dpi?: number;
-    pdfVersion?: string;
-    greyScale?: boolean;
-  }): Promise<Buffer> {
+  /**
+   *  Shrink/Compress pdf file
+   * @param options PdfShrinkOptions
+   * @returns shrunken pdf as buffer
+   */
+  async shrink(options?: PdfShrinkOptions): Promise<Buffer> {
     await this.writePDFToTemp();
 
     if (!this.tmpFile) {
       throw new Error('No temporary pdf file!');
     }
 
-    const dpi = options?.dpi ?? 300;
+    const dpi = options?.resolution ?? 300;
     const pdfVersion = options?.pdfVersion ?? (await this.getPdfVersion());
     const greyScale = options?.greyScale ?? false;
 

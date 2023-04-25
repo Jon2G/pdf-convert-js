@@ -3,5 +3,6 @@ dist
 types
 /test/*.png
 /test/shrunken.pdf
+/test/shrunken2.pdf
 /npm-debug.log
 .idea

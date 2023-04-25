@@ -5,6 +5,8 @@ Along with the usage of TypeScript and promises, this version:
 
 - adds support to read PDF file from local file system
 - properly compiles to both CommonJS and ESM
+- get pdf version of files
+- shrink pdf to compressed format
 
 ## Install
 
@@ -51,7 +53,7 @@ const pdfConverter = new PdfConvert('./folder/example.pdf');
 // pass options
 const options: PdfConvertOptions = {
   // resolution of the output image in dpi
-  resolution: 600,
+
   // path to ghostscript bin directory (only Windows)
   // defaults to executable shipped with this package
   ghostscriptPath: 'path/to/gs/bin',
@@ -70,8 +72,11 @@ const pdfVersion = await pdfConverter.getPdfVersion();
 
 // compress / shrink the PDF with optional parameters
 const shrunkenPDFBuffer = await pdfConverter.shrink({
-  dpi: 72,
+  // down sampled resolution of the output pdf
+  resolution: 72,
+  // pdf version of the output pdf
   pdfVersion: '1.4',
+  // set the output pdf to colored or grey scaled
   greyScale: false,
 });
 await fs.writeFile('shrunken.pdf', shrunkenPDFBuffer);

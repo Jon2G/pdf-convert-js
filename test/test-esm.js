@@ -31,7 +31,7 @@ test('convert pdf file from remote', async (t) => {
   t.truthy(buffer instanceof Buffer);
 
   await writeFile('test/page-remote.png', buffer);
-  t.pass('write png');
+  t.pass('write pdf');
 
   await pdfConverter.dispose();
   t.pass('disposed');
@@ -44,7 +44,7 @@ test('shrink uncompressed pdf file with images', async (t) => {
   t.truthy(buffer instanceof Buffer);
 
   await writeFile('test/shrunken.pdf', buffer);
-  t.pass('write png');
+  t.pass('write pdf');
 
   await pdfConverter.dispose();
   t.pass('disposed');
@@ -53,6 +53,30 @@ test('shrink uncompressed pdf file with images', async (t) => {
     bigint: true,
   });
   const shrunkenStats = statSync('test/shrunken.pdf', { bigint: true });
+
+  t.truthy(originalStats.size > shrunkenStats.size);
+});
+
+test('shrink uncompressed pdf file with options', async (t) => {
+  const pdfConverter = new PdfConvert('test/uncompressed-with-images.pdf');
+
+  const buffer = await pdfConverter.shrink({
+    resolution: 72,
+    pdfVersion: '1.4',
+    greyScale: true
+  });
+  t.truthy(buffer instanceof Buffer);
+
+  await writeFile('test/shrunken2.pdf', buffer);
+  t.pass('write pdf');
+
+  await pdfConverter.dispose();
+  t.pass('disposed');
+
+  const originalStats = statSync('test/uncompressed-with-images.pdf', {
+    bigint: true,
+  });
+  const shrunkenStats = statSync('test/shrunken2.pdf', { bigint: true });
 
   t.truthy(originalStats.size > shrunkenStats.size);
 });
