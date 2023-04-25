@@ -14,7 +14,7 @@ export default {
     }),
     copy({
       targets: [
-        { src: 'src/executables/*/**', dest: 'dist/executables' }
+        { src: 'src/executables/ghostscript/**', dest: 'dist/executables/ghostscript' }
       ]
     }),
   ],
