@@ -1,4 +1,4 @@
-# pdf2png
+# pdf-convert-js
 
 This is a fork of [tr3ysmith/Pdf2Png](https://github.com/tr3ysmith/Pdf2Png).
 Along with the usage of TypeScript and promises, this version:
@@ -11,7 +11,7 @@ Along with the usage of TypeScript and promises, this version:
 ## Install
 
 ```bash
-$ npm install @dcbeck/pdf-convert-js
+$ npm install pdf-convert-js
 ```
 
 ## Setup
