@@ -1,23 +1,26 @@
 {
-  "name": "@brakebein/pdf2png",
+  "name": "@dcbeck/pdf-convert-js",
   "version": "1.0.0",
-  "description": "Convert pages of a PDF document to PNG images",
+  "description": "Shrink pdf files to a web-optimized size and convert pages of a PDF document to PNG images",
   "keywords": [
     "convert",
     "pdf",
     "png",
     "pdf2png",
     "image",
+    "shrink",
+    "size",
+    "shrink-pdf",
     "ghostscript"
   ],
-  "author": "Brakebein",
+  "author": "dcbeck",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Brakebein/pdf2png.git"
+    "url": "https://github.com/dcbeck/pdf-convert-js.git"
   },
-  "homepage": "https://github.com/Brakebein/pdf2png",
+  "homepage": "https://github.com/dcbeck/pdf-convert-js",
   "bugs": {
-    "url": "https://github.com/Brakebein/pdf2png/issues"
+    "url": "https://github.com/dcbeck/pdf-convert-js/issues"
   },
   "license": "MIT",
   "exports": {
@@ -34,29 +37,29 @@
     "test": "ava"
   },
   "dependencies": {
-    "axios": "^0.27.2",
+    "axios": "^1.3.6",
     "child-process-promise": "^2.2.1",
     "tmp-promise": "^3.0.0"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^14.1.0",
-    "@rollup/plugin-typescript": "^8.3.4",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-typescript": "^11.1.0",
     "@types/axios": "^0.14.0",
     "@types/child-process-promise": "^2.2.2",
-    "@types/node": "^16.9.1",
+    "@types/node": "^18.16.0",
     "@types/tmp": "^0.2.3",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "ava": "^4.3.3",
-    "eslint": "^8.24.0",
-    "eslint-config-prettier": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "ava": "^5.2.0",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "^2.7.1",
-    "rimraf": "^3.0.2",
-    "rollup": "^2.77.3",
+    "prettier": "^2.8.8",
+    "rimraf": "^5.0.0",
+    "rollup": "^3.21.0",
     "rollup-plugin-copy": "^3.4.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.4.3"
+    "typescript": "^4.9.5"
   },
   "files": [
     "dist",
