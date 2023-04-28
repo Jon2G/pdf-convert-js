@@ -252,9 +252,8 @@ export class PdfConvert {
       const command = `gs -dNODISPLAY -dNOSAFER -q -c '(${filename}) (r) file runpdfbegin pdfpagecount = quit'`;
       const { stdout } = await exec(command);
 
-      console.log(stdout);
-      // remove the \n at the end
-      return parseInt(stdout.substr(0, stdout.length - 1));
+      // remove all non numeric chars form string
+      return parseInt(stdout.replace(/\D/g, ''));
     } catch (err) {
       throw new Error('Unable to get page count: ' + err);
     }
