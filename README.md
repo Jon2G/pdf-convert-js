@@ -40,7 +40,7 @@ $ brew install ghostscript
 ## Usage
 
 ```typescript
-import { PdfConvert, PdfConvertOptions } from '@brakebein/pdf2png';
+import { PdfConvert, PdfConvertOptions } from 'pdf-convert-js';
 
 // create a PdfConvert object for a PDF file
 // using a Buffer
