@@ -247,16 +247,37 @@ export class PdfConvert {
       throw new Error('No temporary pdf file!');
     }
 
+    let pagesCount: undefined | number;
     try {
       const filename = this.tmpFile.path.replace(/\\/g, '/').trim();
       const command = `gs -dNODISPLAY -dNOSAFER -q -c '(${filename}) (r) file runpdfbegin pdfpagecount = quit'`;
       const { stdout } = await exec(command);
 
-      // remove all non numeric chars form string
-      return parseInt(stdout.replace(/\D/g, ''));
-    } catch (err) {
-      throw new Error('Unable to get page count: ' + err);
+      pagesCount = this.tryParsePagesInt(stdout);
+    } catch (err: any) {
+      const pgCount = this.tryParsePagesInt(err.stdout);
+      if (pgCount !== undefined) {
+        pagesCount = pgCount;
+      } else {
+        throw new Error('Unable to get page count: ' + err);
+      }
     }
+    if (pagesCount !== undefined) {
+      return pagesCount;
+    } else {
+      throw new Error('Unable to get page count: parsing error');
+    }
+  }
+
+  private tryParsePagesInt(stdout: any) {
+    if (typeof stdout === 'string' && stdout.length > 0) {
+      try {
+        return parseInt(stdout.replace(/\D/g, ''));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    return undefined;
   }
 
   /**
