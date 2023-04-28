@@ -1,6 +1,6 @@
 {
   "name": "pdf-convert-js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Shrink pdf files to a web-optimized size and convert pages of a PDF document to PNG images",
   "keywords": [
     "convert",

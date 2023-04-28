@@ -6,3 +6,4 @@ types
 /test/shrunken2.pdf
 /npm-debug.log
 .idea
+.DS_Store

@@ -248,13 +248,11 @@ export class PdfConvert {
     }
 
     try {
-      const { stdout } = await exec(
-        `gs -q -dNODISPLAY -c "(${this.tmpFile.path.replace(
-          /\\/g,
-          '/',
-        )}) (r) file runpdfbegin pdfpagecount = quit"`,
-      );
+      const filename = this.tmpFile.path.replace(/\\/g, '/').trim();
+      const command = `gs -dNODISPLAY -dNOSAFER -q -c '(${filename}) (r) file runpdfbegin pdfpagecount = quit'`;
+      const { stdout } = await exec(command);
 
+      console.log(stdout);
       // remove the \n at the end
       return parseInt(stdout.substr(0, stdout.length - 1));
     } catch (err) {
