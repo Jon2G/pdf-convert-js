@@ -1,6 +1,6 @@
 {
   "name": "pdf-convert-js",
-  "version": "1.0.7",
+  "version": "0.0.2",
   "description": "Shrink pdf files to a web-optimized size and convert pages of a PDF document to PNG images",
   "keywords": [
     "convert",
@@ -13,29 +13,49 @@
     "shrink-pdf",
     "ghostscript"
   ],
-  "author": "dcbeck",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dcbeck/pdf-convert-js.git"
-  },
-  "homepage": "https://github.com/dcbeck/pdf-convert-js",
+  "main": "/lib/index.js",
+  "files": [
+		"lib/**/*"
+	],
+  "author": "Jon2G",
+  "types": "lib/index.d.ts",
+	"scripts": {
+		"make-diagram": "npx tsuml2 --glob \"./src/*.ts\"  ",
+		"build": "tsc",
+		"format": "prettier --write \"src/**/*.ts\"",
+		"lint": "tslint -p tsconfig.json",
+		"prepare": "npm run build",
+		"prepublishOnly": "npm test && npm run lint",
+		"preversion": "npm run lint",
+		"version": "npm run format && git add -A src",
+		"postversion": "git push && git push --tags",
+
+    "cleanup:build": "rimraf dist types",
+    "prebuild": "npm run cleanup:build",
+    "_build": "npx rollup -c && npm run build:types",
+    "build:types": "npx tsc -d --emitDeclarationOnly --declarationDir types",
+    "test": "ava"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Jon2G/pdf-convert-js.git"
+	},
+	
+	
+	
+	"homepage": "https://github.com/Jon2G/pdf-convert-js#readme",
+
+
   "bugs": {
-    "url": "https://github.com/dcbeck/pdf-convert-js/issues"
+    "url": "https://github.com/Jon2G/pdf-convert-js/issues"
   },
   "license": "MIT",
   "exports": {
     "import": "./dist/index.js",
     "require": "./dist/index.cjs"
   },
-  "types": "types/index.d.ts",
   "type": "module",
-  "scripts": {
-    "cleanup:build": "rimraf dist types",
-    "prebuild": "npm run cleanup:build",
-    "build": "npx rollup -c && npm run build:types",
-    "build:types": "npx tsc -d --emitDeclarationOnly --declarationDir types",
-    "test": "ava"
-  },
+
   "dependencies": {
     "axios": "^1.3.6",
     "child-process-promise": "^2.2.1",
@@ -60,9 +80,5 @@
     "rollup-plugin-copy": "^3.4.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
-  },
-  "files": [
-    "dist",
-    "types"
-  ]
+  }
 }

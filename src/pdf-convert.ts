@@ -55,10 +55,12 @@ export class PdfConvert {
     this.source = source;
 
     this.options = {
-      ghostscriptPath:options?.ghostscriptPath?? new URL(
-        './executables/ghostscript',
-        import.meta.url,
-      ).pathname.replace(/^\//, ''),
+      ghostscriptPath:
+        options?.ghostscriptPath ??
+        new URL('./executables/ghostscript', import.meta.url).pathname.replace(
+          /^\//,
+          '',
+        ),
       ...options,
     };
 
